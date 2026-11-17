@@ -1,0 +1,20 @@
+[
+  {
+    "nombre": "Paciente Web (Lead)",
+    "telefono": "04248569872",
+    "motivo": "buennas tardes , quisiera agen...",
+    "fechaHora": "Solicitado vía Chat",
+    "estado": "Confirmada",
+    "id": "3u0ikhm",
+    "fechaRegistro": "7/11/2026"
+  },
+  {
+    "nombre": "Paciente Web (Lead)",
+    "telefono": "04125853698",
+    "motivo": "hola mi nombre es jose perez ,...",
+    "fechaHora": "Solicitado vía Chat",
+    "estado": "Confirmada",
+    "id": "3sm2ewl",
+    "fechaRegistro": "28/10/2026"
+  }
+]
