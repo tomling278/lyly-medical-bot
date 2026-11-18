@@ -1,6 +1,7 @@
 // src/app/admin/page.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Cita {
   id: string;
@@ -12,6 +13,15 @@ interface Cita {
 }
 
 export default function AdminCitas() {
+  const router = useRouter();
+
+// Verificar autenticación al cargar
+useEffect(() => {
+  const auth = localStorage.getItem('adminAuth');
+  if (auth !== 'true') {
+    router.push('/admin/login');
+  }
+}, [router]);
   const [citas, setCitas] = useState<Cita[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState('Todas');
@@ -57,9 +67,26 @@ export default function AdminCitas() {
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800">Panel de Control</h1>
-          <a href="/" className="bg-teal-700 text-white px-5 py-2 rounded-lg hover:bg-teal-800">← Volver al Sitio</a>
-        </div>
+  <h1 className="text-3xl font-bold text-slate-800">Panel de Control</h1>
+  
+  <div className="flex gap-3">
+    <a href="/" className="bg-teal-700 text-white px-5 py-2 rounded-lg hover:bg-teal-800 transition">
+      ← Volver al Sitio
+    </a>
+    
+    <button
+      onClick={() => {
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminUser');
+        localStorage.removeItem('loginTime');
+        router.push('/admin/login');
+      }}
+      className="bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition font-semibold shadow-md"
+    >
+      Cerrar Sesión
+    </button>
+  </div>
+</div>
 
         {/* Filtros */}
         <div className="flex flex-wrap gap-2 mb-6">
