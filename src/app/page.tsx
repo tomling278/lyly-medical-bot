@@ -1,4 +1,5 @@
 'use client';
+import StickyMobileCTA from '@/components/StickyMobileCTA';
 import { useState } from 'react';
 import Image from 'next/image';
 import TestimonialsSection from '@/components/TestimonialsSection';
@@ -44,7 +45,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-800">
+   <div className="min-h-screen bg-white font-sans text-slate-800 pb-20 md:pb-0">
       
       {/* Navbar */}
       <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100">
@@ -183,6 +184,7 @@ export default function HomePage() {
       )}
 
       <footer className="bg-slate-900 text-white py-8"><div className="max-w-6xl mx-auto px-4 text-center"><p className="text-sm text-slate-400">© 2026 {BUSINESS.nombre}. Todos los derechos reservados.</p></div></footer>
+            <StickyMobileCTA />
     </div>
   );
 }
