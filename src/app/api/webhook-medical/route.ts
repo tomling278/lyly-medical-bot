@@ -2,7 +2,8 @@
 import { NextResponse } from 'next/server';
 import { guardarCita } from '@/lib/citasStore';
 
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+// ✅ CORREGIDO: Coincide con el nombre en Vercel (sin NEXT_PUBLIC_)
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const SYSTEM_PROMPT = `Eres el asistente virtual de la clínica de la Od. Ismenia Ávila, especialista en Odontología Operatoria y Estética en Lechería, Venezuela.
 
@@ -28,7 +29,6 @@ export async function POST(request: Request) {
     }
 
     // Mapear el historial al formato que espera Gemini
-    // IMPORTANTE: en Gemini el rol del bot se llama "model" (no "assistant")
     const contents = mensajes
       .filter((m: any) => m.texto)
       .map((m: any) => ({
@@ -38,12 +38,15 @@ export async function POST(request: Request) {
 
     if (!GEMINI_API_KEY) {
       return NextResponse.json(
-        { error: 'Falta NEXT_PUBLIC_GEMINI_API_KEY' },
+        { error: 'Falta GEMINI_API_KEY en variables de entorno' },
         { status: 500 }
       );
     }
+
+    // ✅ CORREGIDO: Formato limpio del fetch para evitar errores de sintaxis
     const res = await fetch(
-   `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,      {
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,13 +55,11 @@ export async function POST(request: Request) {
         }),
       }
     );
- 
 
     const data = await res.json();
 
     if (!res.ok) {
       console.error('Error de Gemini:', data);
-      // Si el modelo no existe, prueba cambiando a gemini-1.5-flash
       return NextResponse.json({ error: 'Error de Gemini' }, { status: 502 });
     }
 
@@ -66,8 +67,7 @@ export async function POST(request: Request) {
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       'Disculpa, no pude procesar tu mensaje. ¿Puedes repetirlo?';
 
-    // 🧠 DETECCIÓN DE CITA: si el último mensaje trae teléfono + intención de agendar,
-    // guardamos la cita en Supabase automáticamente
+    // 🧠 DETECCIÓN DE CITA: guardar en Supabase automáticamente
     const ultimoUsuario = [...mensajes].reverse().find((m: any) => m.role === 'user');
     if (ultimoUsuario?.texto) {
       const texto: string = ultimoUsuario.texto;
@@ -75,11 +75,9 @@ export async function POST(request: Request) {
       const quiereAgendar = /cita|agendar|agenda|mañana|citas/i.test(texto);
 
       if (telMatch && quiereAgendar) {
-        // Extraer nombre: "mi nombre es X" / "soy X" / "nombre: X"
         const nombreMatch = texto.match(/(?:mi nombre es|soy|nombre[:\s])\s*([A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,30})/i);
         const nombre = nombreMatch ? nombreMatch[1].trim() : 'Paciente Web';
 
-        // Extraer motivo: palabra clave de servicio
         const servicios = ['limpieza', 'blanqueamiento', 'ortodoncia', 'implante', 'caries', 'endodoncia', 'sonrisa', 'extraccion', 'revisión', 'consulta'];
         const motivoMatch = servicios.find(s => texto.toLowerCase().includes(s));
         const motivo = motivoMatch ? motivoMatch.charAt(0).toUpperCase() + motivoMatch.slice(1) : 'Agendamiento general';
@@ -94,7 +92,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Devolvemos ambos campos para compatibilidad con el frontend
     return NextResponse.json({ respuesta, message: respuesta });
 
   } catch (error) {
