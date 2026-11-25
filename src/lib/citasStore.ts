@@ -1,42 +1,104 @@
-import fs from 'fs';
-import path from 'path';
+// src/lib/citasStore.ts
+import { supabase } from './supabase';
 
 export interface Cita {
-  id: string;
+  id?: string;
   nombre: string;
   telefono: string;
   motivo: string;
-  fechaHora: string;
-  estado: 'Pendiente' | 'Confirmada' | 'Atendida';
-  fechaRegistro: string;
+  estado: string;
+  fecha_solicitada?: string;
+  created_at?: string;
 }
 
-const filePath = path.join(process.cwd(), 'citas.json');
-
-export const getCitas = (): Cita[] => {
+// Guardar una nueva cita en Supabase
+export async function guardarCita(cita: Cita): Promise<Cita | null> {
   try {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf8');
-      return JSON.parse(data);
+    const { data, error } = await supabase
+      .from('citas')
+      .insert([
+        {
+          nombre: cita.nombre,
+          telefono: cita.telefono,
+          motivo: cita.motivo,
+          estado: cita.estado || 'Pendiente',
+          fecha_solicitada: cita.fecha_solicitada || '',
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error al guardar cita:', error);
+      return null;
     }
-  } catch (error) {
-    console.error("Error leyendo citas:", error);
-  }
-  return [];
-};
 
-export const addCita = (cita: Omit<Cita, 'id' | 'fechaRegistro'>) => {
-  try {
-    const citas = getCitas();
-    const nueva: Cita = {
-      ...cita,
-      id: Math.random().toString(36).substring(2, 9),
-      fechaRegistro: new Date().toLocaleDateString()
-    };
-    citas.unshift(nueva);
-    fs.writeFileSync(filePath, JSON.stringify(citas, null, 2), 'utf8');
-    return nueva;
-  } catch (error) {
-    console.error("Error guardando cita:", error);
+    return data;
+  } catch (err) {
+    console.error('Error inesperado:', err);
+    return null;
   }
-};
+}
+
+// Obtener todas las citas (para el admin)
+export async function obtenerCitas(): Promise<Cita[]> {
+  try {
+    const { data, error } = await supabase
+      .from('citas')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error al obtener citas:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('Error inesperado:', err);
+    return [];
+  }
+}
+
+// Actualizar el estado de una cita (Confirmada, Atendida, Cancelada)
+export async function actualizarEstadoCita(
+  id: string,
+  estado: string
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('citas')
+      .update({ estado })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error al actualizar estado:', error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Error inesperado:', err);
+    return false;
+  }
+}
+
+// Eliminar una cita
+export async function eliminarCita(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('citas')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error al eliminar cita:', error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Error inesperado:', err);
+    return false;
+  }
+}

@@ -1,5 +1,6 @@
 // src/app/admin/page.tsx
 'use client';
+import { obtenerCitas, actualizarEstadoCita, eliminarCita } from '@/lib/citasStore';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -53,9 +54,9 @@ useEffect(() => {
     let mensaje = '';
     
     if (tipo === 'confirmar') {
-      mensaje = `✅ Hola ${cita.nombre}, tu cita ha sido CONFIRMADA. Te esperamos en Calle 4, Qta. Don Rafael, Lechería. Dra. Ismenia Ávila`;
+      mensaje = `✅ Hola ${cita.nombre}, tu cita ha sido CONFIRMADA. Te esperamos en Calle 4, Qta. Don Rafael, Lechería. Od. Ismenia Ávila`;
     } else {
-      mensaje = `📅 Hola ${cita.nombre}, la hora solicitada está ocupada. Por favor contáctanos para reprogramar. Dra. Ismenia Ávila`;
+      mensaje = `📅 Hola ${cita.nombre}, la hora solicitada está ocupada. Por favor contáctanos para reprogramar. Od. Ismenia Ávila`;
     }
 
     window.open(`https://wa.me/58${numeroLimpio}?text=${encodeURIComponent(mensaje)}`, '_blank');

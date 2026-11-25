@@ -20,7 +20,7 @@ export default function Logo({ size = 'medium' }: LogoProps) {
       <div className="relative shrink-0" style={{ width: s.w, height: s.h }}>
         <Image 
           src="/images/logo.png" 
-          alt="Logo Dra. Ismenia Ávila" 
+          alt="Logo Od. Ismenia Ávila" 
           fill
           sizes={`${s.w}px`}
           priority
@@ -30,7 +30,7 @@ export default function Logo({ size = 'medium' }: LogoProps) {
       
       <div className="leading-tight">
         <h1 className={`font-bold text-slate-900 ${s.text}`}>
-          Dra. Ismenia Ávila
+          Od. Ismenia Ávila
         </h1>
         <p className={`text-slate-500 ${size === 'small' ? 'text-[10px]' : 'text-xs'}`}>
           Odontología Operatoria y Estética

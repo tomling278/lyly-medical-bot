@@ -6,7 +6,7 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import ServicesSection from '@/components/ServicesSection';
 import TrustBadges from '@/components/TrustBadges';
 const BUSINESS = {
-  nombre: "Dra. Ismenia Ávila",
+  nombre: "Od. Ismenia Ávila",
   subtitulo: "Odontología Operatoria y Estética",
   telefono: "0412-3922855",
   direccion: "Calle 4 con carreras 10 y 11, Qta. Don Rafael, Lechería",
@@ -54,7 +54,7 @@ export default function HomePage() {
             <div className="relative w-12 h-12 shrink-0">
               <Image 
                 src="/images/logo.jpg" 
-                alt="Logo Dra. Ismenia Ávila" 
+                alt="Logo Od. Ismenia Ávila" 
                 fill
                 sizes="48px"
                 priority
